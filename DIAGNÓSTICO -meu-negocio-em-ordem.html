@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Empresarial — Meu Negócio em Ordem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #8B6914;
+    --gold-mid: #A87D1A;
+    --gold-light: #C49A2A;
+    --gold-pale: #F0E4BF;
+    --gold-ultra-pale: #FAF5E8;
+    --brown-dark: #2C1A0E;
+    --brown-mid: #5C3D1E;
+    --brown-soft: #7A5230;
+    --cream-bg: #FDFAF3;
+    --cream-card: #FFFFFF;
+    --cream-border: #E6D9B8;
+    --cream-section: #FBF6EA;
+    --text-primary: #2C1A0E;
+    --text-secondary: #5C3D1E;
+    --text-muted: #8A7560;
+    --success-bg: #F0FBF4;
+    --success-border: #9FD9BB;
+    --success-text: #085041;
+    --warning-bg: #FBF5E6;
+    --warning-border: #DCBA60;
+    --warning-text: #6B4A0E;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream-bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ===================== HEADER ===================== */
+  .page-header {
+    background: var(--brown-dark);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(196,154,42,0.03) 40px,
+      rgba(196,154,42,0.03) 80px
+    );
+  }
+
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 0.75rem;
+    position: relative;
+  }
+
+  .header-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 38px;
+    font-weight: 600;
+    color: #FAF5E8;
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+    position: relative;
+  }
+
+  .header-subtitle {
+    font-size: 15px;
+    font-weight: 300;
+    color: rgba(250,245,232,0.72);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  .header-line {
+    width: 48px;
+    height: 2px;
+    background: var(--gold-light);
+    margin: 1.5rem auto 0;
+    position: relative;
+  }
+
+  /* ===================== MAIN LAYOUT ===================== */
+  .page-body {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ===================== SCORE SUMMARY ===================== */
+  .score-banner {
+    background: var(--cream-card);
+    border: 1px solid var(--cream-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    display: grid;
+    grid-template-columns: auto 1px 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .score-circle-block {
+    text-align: center;
+  }
+
+  .score-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 2px solid var(--gold-pale);
+    background: var(--gold-ultra-pale);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  .score-num {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 46px;
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .score-denom {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    font-weight: 400;
+  }
+
+  .score-label-below {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 0.6rem;
+    letter-spacing: 0.5px;
+  }
+
+  .score-divider-v {
+    width: 1px;
+    height: 90px;
+    background: var(--cream-border);
+  }
+
+  .score-meter-block { flex: 1; }
+
+  .meter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.6rem;
+  }
+
+  .meter-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .meter-pct {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--gold);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .meter-track {
+    height: 10px;
+    background: var(--gold-ultra-pale);
+    border: 1px solid var(--gold-pale);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+  }
+
+  .meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .classification-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--gold-ultra-pale);
+    border: 1px solid var(--gold-pale);
+    color: var(--gold);
+    transition: all 0.3s;
+  }
+
+  .meter-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  /* ===================== SECTION TITLES ===================== */
+  .section-eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold-mid);
+    margin-bottom: 0.4rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+  }
+
+  /* ===================== PHASES ===================== */
+  .phase-block { margin-bottom: 2.5rem; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--cream-border);
+  }
+
+  .phase-tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cream-card);
+    background: var(--gold);
+    padding: 4px 12px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+
+  .phase-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* ===================== DIMENSION CARDS ===================== */
+  .dim-card {
+    background: var(--cream-card);
+    border: 1px solid var(--cream-border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .dim-card:hover {
+    border-color: var(--gold-pale);
+    box-shadow: 0 2px 12px rgba(139,105,20,0.07);
+  }
+
+  .dim-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.75rem;
+  }
+
+  .dim-icon {
+    font-size: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--gold-ultra-pale);
+    border: 1px solid var(--gold-pale);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--gold);
+  }
+
+  .dim-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+    line-height: 1.3;
+  }
+
+  .dim-score-val {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--gold);
+    min-width: 40px;
+    text-align: right;
+  }
+
+  .dim-slider {
+    width: 100%;
+    height: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold) var(--fill-pct, 0%), var(--gold-ultra-pale) var(--fill-pct, 0%), var(--gold-ultra-pale) 100%);
+    border-radius: 99px;
+    outline: none;
+    cursor: pointer;
+    border: 1px solid var(--gold-pale);
+    margin-bottom: 0.4rem;
+  }
+
+  .dim-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--cream-card);
+    border: 2px solid var(--gold);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(139,105,20,0.25);
+  }
+
+  .dim-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--cream-card);
+    border: 2px solid var(--gold);
+    cursor: pointer;
+  }
+
+  .dim-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-muted);
+    padding: 0 2px;
+    margin-bottom: 0.6rem;
+  }
+
+  .dim-question {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    font-style: italic;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--cream-border);
+  }
+
+  .dim-question::before {
+    content: '';
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  /* ===================== RADAR CHART ===================== */
+  .radar-section {
+    background: var(--cream-card);
+    border: 1px solid var(--cream-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .radar-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .radar-canvas-wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    background: var(--cream-section);
+    border-radius: 12px;
+    border: 1px solid var(--gold-pale);
+    padding: 1.5rem;
+  }
+
+  /* ===================== RESULT BOX ===================== */
+  .result-section {
+    background: var(--cream-card);
+    border: 1px solid var(--cream-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem 0;
+    display: none;
+  }
+
+  .result-section.visible { display: block; }
+
+  .result-classification {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .result-card {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .result-card.strength {
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+  }
+
+  .result-card.gap {
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+  }
+
+  .result-card-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .result-card.strength .result-card-label { color: var(--success-text); }
+  .result-card.gap .result-card-label { color: var(--warning-text); }
+
+  .result-item {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 0.4rem;
+  }
+
+  .result-card.strength .result-item { color: var(--success-text); }
+  .result-card.gap .result-item { color: var(--warning-text); }
+
+  /* ===================== SAVE BOX ===================== */
+  .save-section {
+    background: var(--cream-section);
+    border: 1px solid var(--cream-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .save-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .save-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .name-input-row {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 480px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .name-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cream-border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--cream-card);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .name-input:focus { border-color: var(--gold-light); }
+
+  .date-input {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cream-border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--cream-card);
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 150px;
+  }
+
+  .date-input:focus { border-color: var(--gold-light); }
+
+  .btn-row {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-gold {
+    padding: 0.85rem 2rem;
+    background: var(--gold);
+    color: var(--cream-bg);
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-gold:hover { background: var(--gold-mid); transform: translateY(-1px); }
+
+  .btn-outline {
+    padding: 0.85rem 2rem;
+    background: transparent;
+    color: var(--gold);
+    border: 1.5px solid var(--gold);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-outline:hover { background: var(--gold-ultra-pale); }
+
+  /* ===================== SNAPSHOT SECTION ===================== */
+  .snapshot-section {
+    background: var(--cream-card);
+    border: 1px solid var(--cream-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .snapshot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+
+  .snapshot-card {
+    border: 1px solid var(--cream-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: var(--cream-section);
+  }
+
+  .snapshot-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold-mid);
+    margin-bottom: 0.5rem;
+  }
+
+  .snapshot-score-big {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .snapshot-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .snapshot-empty {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .delta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 1rem;
+  }
+
+  .delta-badge.positive {
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: var(--success-text);
+  }
+
+  .delta-badge.neutral {
+    background: var(--gold-ultra-pale);
+    border: 1px solid var(--gold-pale);
+    color: var(--gold);
+  }
+
+  /* ===================== FOOTER ===================== */
+  .page-footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--brown-dark);
+    color: rgba(250,245,232,0.55);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .footer-brand {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 16px;
+    color: var(--gold-light);
+    margin-bottom: 0.4rem;
+  }
+
+  /* ===================== PRINT STYLES ===================== */
+  @media print {
+    body { background: white; }
+    .no-print { display: none !important; }
+    .page-header { background: white; border-bottom: 2px solid var(--gold); }
+    .header-title, .header-eyebrow, .header-subtitle { color: var(--text-primary) !important; }
+    .dim-card, .score-banner, .radar-section, .result-section, .snapshot-section { 
+      box-shadow: none; 
+      border: 1px solid #ccc; 
+      break-inside: avoid;
+    }
+    .page-footer { background: white; border-top: 1px solid #ccc; color: #666; }
+    .footer-brand { color: var(--gold); }
+    .btn-row, .name-input-row { display: none; }
+    .save-section { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .score-banner { grid-template-columns: 1fr; }
+    .score-divider-v { width: 100%; height: 1px; }
+    .result-grid { grid-template-columns: 1fr; }
+    .snapshot-grid { grid-template-columns: 1fr; }
+    .name-input-row { flex-direction: column; }
+    .header-title { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="page-header">
+  <div class="header-eyebrow">Priscilla Guedes Mentoria</div>
+  <h1 class="header-title">Diagnóstico Empresarial</h1>
+  <p class="header-subtitle">Avalie seu negócio em 12 dimensões estratégicas. Use antes e ao final da mentoria para medir com clareza a sua transformação.</p>
+  <div class="header-line"></div>
+</header>
+
+<!-- BODY -->
+<main class="page-body">
+
+  <!-- INTRO EXPLICATIVA -->
+  <div style="background:#fff;border:1px solid var(--cream-border);border-radius:16px;padding:1.75rem 2rem;margin-bottom:2rem;">
+    <div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-mid);margin-bottom:6px;">O que é este diagnóstico</div>
+    <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;font-weight:600;color:var(--text-primary);margin-bottom:0.75rem;line-height:1.2;">Uma radiografia honesta do seu negócio</div>
+    <p style="font-size:14px;color:var(--text-secondary);line-height:1.75;font-weight:300;max-width:680px;">
+      Este diagnóstico avalia <strong style="font-weight:500;color:var(--text-primary);">12 dimensões estratégicas</strong> do seu negócio com uma nota de 0 a 10. Não existe resposta certa ou errada. O que existe é <strong style="font-weight:500;color:var(--text-primary);">honestidade</strong> — e quanto mais honesta for sua avaliação, mais revelador será o resultado. Ao final, você recebe sua pontuação total, um mapa visual do negócio e a identificação dos seus pontos fortes e focos prioritários de melhoria.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:1rem;">
+      <span style="font-size:11px;padding:4px 12px;border-radius:99px;background:var(--gold-ultra-pale);border:1px solid var(--gold-pale);color:var(--gold);">⏱ 10 a 15 minutos</span>
+      <span style="font-size:11px;padding:4px 12px;border-radius:99px;background:var(--gold-ultra-pale);border:1px solid var(--gold-pale);color:var(--gold);">📊 12 dimensões avaliadas</span>
+      <span style="font-size:11px;padding:4px 12px;border-radius:99px;background:var(--gold-ultra-pale);border:1px solid var(--gold-pale);color:var(--gold);">🎯 Resultado imediato</span>
+      <span style="font-size:11px;padding:4px 12px;border-radius:99px;background:var(--gold-ultra-pale);border:1px solid var(--gold-pale);color:var(--gold);">💾 Salve e compare antes e depois</span>
+    </div>
+  </div>
+
+  <!-- IDENTIFICAÇÃO DO NEGÓCIO -->
+  <div style="background:#fff;border:1px solid var(--cream-border);border-radius:16px;padding:1.75rem 2rem;margin-bottom:2rem;">
+    <div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-mid);margin-bottom:6px;">Antes de começar</div>
+    <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;font-weight:600;color:var(--text-primary);margin-bottom:1.25rem;line-height:1.2;">Identificação do negócio</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-mid);display:block;margin-bottom:6px;">Nome do responsável</label>
+        <input type="text" id="biz-owner" placeholder="Seu nome completo" style="width:100%;padding:0.65rem 0.9rem;border:1px solid var(--cream-border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-primary);background:var(--cream-bg);outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold-light)'" onblur="this.style.borderColor='var(--cream-border)'" />
+      </div>
+      <div>
+        <label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-mid);display:block;margin-bottom:6px;">Nome do negócio</label>
+        <input type="text" id="biz-name" placeholder="Nome da sua empresa ou marca" style="width:100%;padding:0.65rem 0.9rem;border:1px solid var(--cream-border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-primary);background:var(--cream-bg);outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold-light)'" onblur="this.style.borderColor='var(--cream-border)'" />
+      </div>
+      <div>
+        <label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-mid);display:block;margin-bottom:6px;">Tipo de negócio</label>
+        <select id="biz-type" style="width:100%;padding:0.65rem 0.9rem;border:1px solid var(--cream-border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-primary);background:var(--cream-bg);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;" onfocus="this.style.borderColor='var(--gold-light)'" onblur="this.style.borderColor='var(--cream-border)'">
+          <option value="" disabled selected>Selecione o tipo</option>
+          <option>Comércio (venda de produtos)</option>
+          <option>Serviços</option>
+          <option>Indústria / Produção</option>
+          <option>Comércio + Serviços</option>
+          <option>E-commerce</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-mid);display:block;margin-bottom:6px;">Segmento de atuação</label>
+        <input type="text" id="biz-segment" placeholder="Ex: moda, alimentação, saúde..." style="width:100%;padding:0.65rem 0.9rem;border:1px solid var(--cream-border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-primary);background:var(--cream-bg);outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold-light)'" onblur="this.style.borderColor='var(--cream-border)'" />
+      </div>
+      <div>
+        <label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-mid);display:block;margin-bottom:6px;">Tempo de existência do negócio</label>
+        <select id="biz-age" style="width:100%;padding:0.65rem 0.9rem;border:1px solid var(--cream-border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-primary);background:var(--cream-bg);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;" onfocus="this.style.borderColor='var(--gold-light)'" onblur="this.style.borderColor='var(--cream-border)'">
+          <option value="" disabled selected>Selecione o tempo</option>
+          <option>Menos de 1 ano</option>
+          <option>1 a 2 anos</option>
+          <option>3 a 5 anos</option>
+          <option>6 a 10 anos</option>
+          <option>Mais de 10 anos</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-mid);display:block;margin-bottom:6px;">Número de colaboradores</label>
+        <select id="biz-team" style="width:100%;padding:0.65rem 0.9rem;border:1px solid var(--cream-border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-primary);background:var(--cream-bg);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;" onfocus="this.style.borderColor='var(--gold-light)'" onblur="this.style.borderColor='var(--cream-border)'">
+          <option value="" disabled selected>Selecione</option>
+          <option>Só eu (solopreneur)</option>
+          <option>2 a 5 pessoas</option>
+          <option>6 a 15 pessoas</option>
+          <option>Mais de 15 pessoas</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:0.85rem;padding:0.75rem 1rem;background:var(--gold-ultra-pale);border-radius:8px;border:1px solid var(--gold-pale);font-size:12px;color:var(--gold-mid);line-height:1.55;">
+      💡 Estas informações são usadas para personalizar seu diagnóstico e serão incluídas no arquivo salvo.
+    </div>
+  </div>
+  <div class="score-banner">
+    <div class="score-circle-block">
+      <div class="score-circle">
+        <span class="score-num" id="total-score">0</span>
+        <span class="score-denom">de 120</span>
+      </div>
+      <div class="score-label-below">Pontuação total</div>
+    </div>
+    <div class="score-divider-v"></div>
+    <div class="score-meter-block">
+      <div class="meter-header">
+        <span class="meter-title">Índice de Maturidade Empresarial</span>
+        <span class="meter-pct" id="pct-label">0%</span>
+      </div>
+      <div class="meter-track">
+        <div class="meter-fill" id="meter-fill"></div>
+      </div>
+      <div class="classification-badge" id="classification-badge">Mova os controles para começar</div>
+      <p class="meter-hint">Avalie cada dimensão de 0 (não existe) a 10 (excelência)</p>
+    </div>
+  </div>
+
+  <!-- SCORE BANNER -->
+  <div id="dimensions-container"></div>
+
+  <!-- RADAR CHART -->
+  <div class="radar-section">
+    <div class="radar-header">
+      <div class="section-eyebrow">Visualização</div>
+      <div class="section-title">Mapa do seu negócio</div>
+    </div>
+    <div class="radar-canvas-wrap">
+      <canvas id="radar-chart" height="320"></canvas>
+    </div>
+  </div>
+
+  <!-- RESULT SECTION -->
+  <div class="result-section" id="result-section">
+    <div class="section-eyebrow" style="text-align:center">Análise automática</div>
+    <div class="result-classification" id="result-headline"></div>
+    <div class="result-grid">
+      <div class="result-card strength">
+        <div class="result-card-label">Pontos fortes</div>
+        <div id="strengths-list"></div>
+      </div>
+      <div class="result-card gap">
+        <div class="result-card-label">Focos prioritários</div>
+        <div id="gaps-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SNAPSHOT / ANTES E DEPOIS -->
+  <div class="snapshot-section">
+    <div class="section-eyebrow">Antes e depois da mentoria</div>
+    <div class="section-title">Registro da sua evolução</div>
+    <p style="font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:0;">Salve o diagnóstico de entrada e repita ao final das 12 semanas. O sistema calcula automaticamente sua evolução.</p>
+    <div class="snapshot-grid">
+      <div class="snapshot-card">
+        <div class="snapshot-label">Diagnóstico inicial</div>
+        <div id="snapshot-before-content"><span class="snapshot-empty">Nenhum registro salvo ainda</span></div>
+      </div>
+      <div class="snapshot-card">
+        <div class="snapshot-label">Diagnóstico final</div>
+        <div id="snapshot-after-content"><span class="snapshot-empty">A ser preenchido ao final da mentoria</span></div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:1rem;" id="delta-section"></div>
+  </div>
+
+  <!-- SAVE SECTION -->
+  <div class="save-section no-print">
+    <div class="save-title">Salvar seu diagnóstico</div>
+    <p class="save-subtitle">Selecione uma data e clique em salvar. As informações do negócio preenchidas acima serão incluídas automaticamente.</p>
+    <div class="name-input-row">
+      <input type="date" class="date-input" id="diag-date" style="flex:1;min-width:0;" />
+    </div>
+    <div class="btn-row">
+      <button class="btn-gold" onclick="saveSnapshot('before')">
+        📌 Registrar como diagnóstico inicial
+      </button>
+      <button class="btn-gold" onclick="saveSnapshot('after')">
+        🏆 Registrar como diagnóstico final
+      </button>
+      <button class="btn-outline" onclick="saveHTML()">
+        💾 Salvar arquivo HTML
+      </button>
+      <button class="btn-outline" onclick="window.print()">
+        🖨️ Imprimir / Salvar PDF
+      </button>
+      <button class="btn-outline" onclick="resetAll()">
+        ↺ Reiniciar
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <div class="footer-brand">Priscilla Guedes Mentoria</div>
+  <div>Meu Negócio em Ordem — Diagnóstico Empresarial</div>
+  <div style="margin-top:4px;">priscillaguedes.com.br</div>
+</footer>
+
+<script>
+// ========== DATA ==========
+const phases = [
+  {
+    tag: "Fase 1",
+    name: "Diagnóstico e Identidade",
+    dims: [
+      { id: "identidade", icon: "🧭", name: "Identidade e propósito do negócio", q: "Você sabe claramente qual é o propósito do seu negócio, para quem ele existe e o que te diferencia no mercado?" },
+      { id: "financas", icon: "💰", name: "Gestão financeira e controle", q: "Você tem controle do fluxo de caixa, margem de lucro e sabe se o seu negócio é lucrativo de verdade?" },
+      { id: "clientes", icon: "🤝", name: "Conhecimento dos clientes", q: "Você conhece profundamente quem é seu cliente ideal, o que ele valoriza e por que escolhe você?" },
+      { id: "operacoes", icon: "⚙️", name: "Organização e processos internos", q: "Seu negócio tem processos documentados ou tudo depende da sua memória e presença constante?" }
+    ]
+  },
+  {
+    tag: "Fase 2",
+    name: "Estrutura e Operação",
+    dims: [
+      { id: "vendas", icon: "📈", name: "Estratégia de vendas e conversão", q: "Você tem uma estratégia clara de vendas ou ainda vende de forma reativa, sem previsibilidade?" },
+      { id: "mkt", icon: "📣", name: "Marketing e posicionamento", q: "As pessoas que precisam de você conseguem te encontrar e entender o seu valor com facilidade?" },
+      { id: "equipe", icon: "👥", name: "Gestão de pessoas e liderança", q: "Você consegue delegar com confiança ou ainda sente que precisa fazer tudo para sair certo?" },
+      { id: "precificacao", icon: "🏷️", name: "Precificação e lucratividade", q: "Seus preços cobrem todos os custos, refletem o valor entregue e ainda geram lucro real?" }
+    ]
+  },
+  {
+    tag: "Fase 3",
+    name: "Crescimento e Legado",
+    dims: [
+      { id: "planejamento", icon: "🗺️", name: "Planejamento estratégico", q: "Você tem clareza sobre onde seu negócio estará daqui a 1 ano e quais passos te levarão até lá?" },
+      { id: "tempo", icon: "⏱️", name: "Gestão do tempo e produtividade", q: "Você trabalha de forma estratégica ou passa a maior parte do tempo apagando incêndios?" },
+      { id: "autoridade", icon: "🏆", name: "Autoridade e marca pessoal", q: "As pessoas percebem você como referência no seu segmento? Você é a primeira opção quando pensam no que você faz?" },
+      { id: "escala", icon: "🚀", name: "Expansão e legado", q: "Seu negócio tem estrutura para crescer sem depender exclusivamente de você?" }
+    ]
+  }
+];
+
+const allDims = phases.flatMap(p => p.dims);
+const scores = {};
+allDims.forEach(d => { scores[d.id] = 0; });
+
+let radarChart = null;
+let snapshots = { before: null, after: null };
+
+// ========== BUILD UI ==========
+function buildDimensions() {
+  const container = document.getElementById('dimensions-container');
+  phases.forEach(phase => {
+    const block = document.createElement('div');
+    block.className = 'phase-block';
+
+    block.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-tag">${phase.tag}</span>
+        <span class="phase-name">${phase.name}</span>
+      </div>
+    `;
+
+    phase.dims.forEach(dim => {
+      const card = document.createElement('div');
+      card.className = 'dim-card';
+      card.innerHTML = `
+        <div class="dim-top">
+          <div class="dim-icon" aria-hidden="true">${dim.icon}</div>
+          <span class="dim-name">${dim.name}</span>
+          <span class="dim-score-val" id="val-${dim.id}">0</span>
+        </div>
+        <input type="range" min="0" max="10" value="0" step="1"
+          class="dim-slider" id="slider-${dim.id}"
+          oninput="updateDim('${dim.id}', this.value)"
+          style="--fill-pct: 0%" />
+        <div class="dim-scale"><span>0 — não existe</span><span>5 — em desenvolvimento</span><span>10 — excelência</span></div>
+        <div class="dim-question">${dim.q}</div>
+      `;
+      block.appendChild(card);
+    });
+
+    container.appendChild(block);
+  });
+}
+
+function updateDim(id, val) {
+  const v = parseInt(val);
+  scores[id] = v;
+  document.getElementById('val-' + id).textContent = v;
+  const slider = document.getElementById('slider-' + id);
+  slider.style.setProperty('--fill-pct', (v * 10) + '%');
+  recalc();
+}
+
+// ========== RECALCULATE ==========
+function recalc() {
+  const total = Object.values(scores).reduce((a,b) => a+b, 0);
+  const pct = Math.round((total / 120) * 100);
+
+  document.getElementById('total-score').textContent = total;
+  document.getElementById('pct-label').textContent = pct + '%';
+  document.getElementById('meter-fill').style.width = pct + '%';
+
+  const { label, color } = classify(pct);
+  const badge = document.getElementById('classification-badge');
+  badge.textContent = label;
+  badge.style.background = color.bg;
+  badge.style.borderColor = color.border;
+  badge.style.color = color.text;
+
+  updateRadar();
+  updateResults(total, label);
+}
+
+function classify(pct) {
+  if (pct <= 25) return { label: 'Negócio em modo sobrevivência', color: { bg: '#FCF0F0', border: '#F09595', text: '#A32D2D' } };
+  if (pct <= 45) return { label: 'Negócio com potencial, mas sem estrutura', color: { bg: '#FBF5E6', border: '#DCBA60', text: '#6B4A0E' } };
+  if (pct <= 65) return { label: 'Negócio em transição estratégica', color: { bg: '#FAF5E8', border: '#C49A2A', text: '#8B6914' } };
+  if (pct <= 80) return { label: 'Negócio estruturado e em crescimento', color: { bg: '#F0FBF4', border: '#9FD9BB', text: '#0F6E56' } };
+  return { label: 'Negócio de alta maturidade — referência no segmento', color: { bg: '#EAF3DE', border: '#9FCF80', text: '#27500A' } };
+}
+
+// ========== RADAR CHART ==========
+function updateRadar() {
+  const labels = allDims.map(d => {
+    const words = d.name.split(' ');
+    const lines = [];
+    let line = '';
+    words.forEach(w => {
+      if ((line + ' ' + w).trim().length > 18) { lines.push(line.trim()); line = w; }
+      else { line = (line + ' ' + w).trim(); }
+    });
+    if (line) lines.push(line);
+    return lines;
+  });
+  const data = allDims.map(d => scores[d.id]);
+
+  if (radarChart) {
+    radarChart.data.datasets[0].data = data;
+    radarChart.update('none');
+    return;
+  }
+
+  const ctx = document.getElementById('radar-chart').getContext('2d');
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Pontuação',
+        data,
+        backgroundColor: 'rgba(196,154,42,0.15)',
+        borderColor: '#8B6914',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#FAF5E8',
+        pointBorderColor: '#8B6914',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 7
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        r: {
+          min: 0,
+          max: 10,
+          ticks: {
+            stepSize: 2,
+            font: { size: 10, family: "'DM Sans', sans-serif" },
+            color: '#8A7560',
+            backdropColor: 'transparent'
+          },
+          grid: {
+            color: 'rgba(196,154,42,0.20)'
+          },
+          angleLines: {
+            color: 'rgba(196,154,42,0.20)'
+          },
+          pointLabels: {
+            font: { size: 11, family: "'DM Sans', sans-serif" },
+            color: '#5C3D1E'
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => allDims[items[0].dataIndex].name,
+            label: (item) => ' Pontuação: ' + item.raw + '/10'
+          },
+          backgroundColor: '#FAF5E8',
+          borderColor: '#C49A2A',
+          borderWidth: 1,
+          titleColor: '#2C1A0E',
+          bodyColor: '#5C3D1E',
+          padding: 10
+        }
+      }
+    }
+  });
+}
+
+// ========== RESULTS ==========
+function updateResults(total, label) {
+  if (total === 0) { document.getElementById('result-section').classList.remove('visible'); return; }
+
+  const sorted = allDims.map(d => ({ ...d, score: scores[d.id] })).sort((a,b) => b.score - a.score);
+  const strengths = sorted.slice(0, 3).filter(d => d.score >= 5);
+  const gaps = sorted.slice().reverse().slice(0, 3).filter(d => d.score < 8);
+
+  document.getElementById('result-headline').textContent = label;
+  document.getElementById('strengths-list').innerHTML = strengths.length
+    ? strengths.map(d => `<div class="result-item">${d.icon} ${d.name} <strong>${d.score}/10</strong></div>`).join('')
+    : '<div class="result-item" style="font-style:italic;opacity:0.7">Aumente as pontuações para revelar seus pontos fortes</div>';
+  document.getElementById('gaps-list').innerHTML = gaps.length
+    ? gaps.map(d => `<div class="result-item">${d.icon} ${d.name} <strong>${d.score}/10</strong></div>`).join('')
+    : '<div class="result-item" style="font-style:italic;opacity:0.7">Parabéns — todas as dimensões com pontuação elevada!</div>';
+
+  document.getElementById('result-section').classList.add('visible');
+}
+
+// ========== GET BIZ INFO ==========
+function getBizInfo() {
+  return {
+    owner:   (document.getElementById('biz-owner')   || {}).value || '',
+    name:    (document.getElementById('biz-name')    || {}).value || '',
+    type:    (document.getElementById('biz-type')    || {}).value || '',
+    segment: (document.getElementById('biz-segment') || {}).value || '',
+    age:     (document.getElementById('biz-age')     || {}).value || '',
+    team:    (document.getElementById('biz-team')    || {}).value || '',
+  };
+}
+
+// ========== SNAPSHOTS ==========
+function saveSnapshot(type) {
+  const total = Object.values(scores).reduce((a,b) => a+b, 0);
+  const pct = Math.round((total / 120) * 100);
+  const biz = getBizInfo();
+  const name = biz.owner;
+  const date = document.getElementById('diag-date').value;
+  const { label } = classify(pct);
+  const dateStr = date ? new Date(date + 'T12:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
+
+  snapshots[type] = { total, pct, label, name, dateStr, biz, scores: { ...scores } };
+  renderSnapshots();
+  alert(type === 'before' ? 'Diagnóstico inicial registrado com sucesso!' : 'Diagnóstico final registrado! Parabéns pela sua evolução!');
+}
+
+function renderSnapshots() {
+  const b = snapshots.before;
+  const a = snapshots.after;
+
+  document.getElementById('snapshot-before-content').innerHTML = b
+    ? `<div class="snapshot-score-big">${b.total}</div>
+       <div class="snapshot-sub">de 120 pontos (${b.pct}%)</div>
+       <div class="snapshot-sub" style="margin-top:4px;">${b.label}</div>
+       ${b.biz && b.biz.name ? `<div class="snapshot-sub" style="margin-top:4px;">🏢 ${b.biz.name}</div>` : ''}
+       ${b.name ? `<div class="snapshot-sub">👤 ${b.name}</div>` : ''}
+       <div class="snapshot-sub">📅 ${b.dateStr}</div>`
+    : '<span class="snapshot-empty">Nenhum registro salvo ainda</span>';
+
+  document.getElementById('snapshot-after-content').innerHTML = a
+    ? `<div class="snapshot-score-big">${a.total}</div>
+       <div class="snapshot-sub">de 120 pontos (${a.pct}%)</div>
+       <div class="snapshot-sub" style="margin-top:4px;">${a.label}</div>
+       ${a.biz && a.biz.name ? `<div class="snapshot-sub" style="margin-top:4px;">🏢 ${a.biz.name}</div>` : ''}
+       ${a.name ? `<div class="snapshot-sub">👤 ${a.name}</div>` : ''}
+       <div class="snapshot-sub">📅 ${a.dateStr}</div>`
+    : '<span class="snapshot-empty">A ser preenchido ao final da mentoria</span>';
+
+  const delta = document.getElementById('delta-section');
+  if (b && a) {
+    const diff = a.total - b.total;
+    const diffPct = a.pct - b.pct;
+    const positive = diff >= 0;
+    delta.innerHTML = `<div class="delta-badge ${positive ? 'positive' : 'neutral'}">${positive ? '▲' : '▼'} Evolução: +${diff} pontos | +${diffPct} pontos percentuais de maturidade empresarial</div>`;
+  } else {
+    delta.innerHTML = '';
+  }
+}
+
+// ========== SAVE HTML ==========
+function saveHTML() {
+  const total = Object.values(scores).reduce((a,b) => a+b, 0);
+  const pct = Math.round((total / 120) * 100);
+  const biz = getBizInfo();
+  const name = biz.owner;
+  const date = document.getElementById('diag-date').value;
+  const dateStr = date ? new Date(date + 'T12:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
+  const { label } = classify(pct);
+
+  const bizInfoHTML = (biz.owner || biz.name || biz.type) ? `
+    <div style="background:#FBF6EA;border:1px solid #E6D9B8;border-radius:12px;padding:20px 24px;margin-bottom:28px;">
+      <div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#A87D1A;margin-bottom:12px;">Identificação do negócio</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        ${biz.owner    ? `<div><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8A7560;margin-bottom:3px;">Responsável</div><div style="font-size:14px;font-weight:500;color:#2C1A0E;">${biz.owner}</div></div>` : ''}
+        ${biz.name     ? `<div><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8A7560;margin-bottom:3px;">Negócio</div><div style="font-size:14px;font-weight:500;color:#2C1A0E;">${biz.name}</div></div>` : ''}
+        ${biz.type     ? `<div><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8A7560;margin-bottom:3px;">Tipo</div><div style="font-size:14px;color:#5C3D1E;">${biz.type}</div></div>` : ''}
+        ${biz.segment  ? `<div><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8A7560;margin-bottom:3px;">Segmento</div><div style="font-size:14px;color:#5C3D1E;">${biz.segment}</div></div>` : ''}
+        ${biz.age      ? `<div><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8A7560;margin-bottom:3px;">Tempo de existência</div><div style="font-size:14px;color:#5C3D1E;">${biz.age}</div></div>` : ''}
+        ${biz.team     ? `<div><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8A7560;margin-bottom:3px;">Equipe</div><div style="font-size:14px;color:#5C3D1E;">${biz.team}</div></div>` : ''}
+      </div>
+    </div>` : '';
+
+  const dimsRows = allDims.map(d => `
+    <tr>
+      <td style="padding:8px 12px; border-bottom:1px solid #E6D9B8; font-size:13px;">${d.icon} ${d.name}</td>
+      <td style="padding:8px 12px; border-bottom:1px solid #E6D9B8; text-align:center; font-weight:500; color:#8B6914; font-size:14px;">${scores[d.id]}/10</td>
+      <td style="padding:8px 12px; border-bottom:1px solid #E6D9B8;">
+        <div style="height:8px;background:#FAF5E8;border-radius:99px;border:1px solid #E6D9B8;">
+          <div style="height:100%;width:${scores[d.id] * 10}%;background:#8B6914;border-radius:99px;"></div>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  const snapshotHTML = (snapshots.before || snapshots.after) ? `
+    <div style="margin-top:32px;">
+      <div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#A87D1A;margin-bottom:4px;">Registro de evolução</div>
+      <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;font-weight:600;color:#2C1A0E;margin-bottom:16px;">Antes e depois da mentoria</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        ${snapshots.before ? `<div style="padding:16px;border:1px solid #E6D9B8;border-radius:12px;background:#FBF6EA;">
+          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#A87D1A;margin-bottom:8px;">Diagnóstico inicial</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:36px;font-weight:600;color:#8B6914;">${snapshots.before.total}</div>
+          <div style="font-size:12px;color:#8A7560;">de 120 pontos (${snapshots.before.pct}%)</div>
+          <div style="font-size:12px;color:#8A7560;margin-top:4px;">${snapshots.before.label}</div>
+          ${snapshots.before.biz && snapshots.before.biz.name ? `<div style="font-size:12px;color:#8A7560;margin-top:4px;">🏢 ${snapshots.before.biz.name}</div>` : ''}
+          <div style="font-size:12px;color:#8A7560;margin-top:4px;">📅 ${snapshots.before.dateStr}</div>
+        </div>` : '<div style="padding:16px;border:1px dashed #E6D9B8;border-radius:12px;background:#FBF6EA;font-size:13px;color:#8A7560;font-style:italic;">Diagnóstico inicial não registrado</div>'}
+        ${snapshots.after ? `<div style="padding:16px;border:1px solid #E6D9B8;border-radius:12px;background:#FBF6EA;">
+          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#A87D1A;margin-bottom:8px;">Diagnóstico final</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:36px;font-weight:600;color:#8B6914;">${snapshots.after.total}</div>
+          <div style="font-size:12px;color:#8A7560;">de 120 pontos (${snapshots.after.pct}%)</div>
+          <div style="font-size:12px;color:#8A7560;margin-top:4px;">${snapshots.after.label}</div>
+          ${snapshots.after.biz && snapshots.after.biz.name ? `<div style="font-size:12px;color:#8A7560;margin-top:4px;">🏢 ${snapshots.after.biz.name}</div>` : ''}
+          <div style="font-size:12px;color:#8A7560;margin-top:4px;">📅 ${snapshots.after.dateStr}</div>
+        </div>` : '<div style="padding:16px;border:1px dashed #E6D9B8;border-radius:12px;background:#FBF6EA;font-size:13px;color:#8A7560;font-style:italic;">Diagnóstico final ainda não realizado</div>'}
+      </div>
+      ${(snapshots.before && snapshots.after) ? `<div style="text-align:center;margin-top:16px;padding:10px 20px;display:inline-block;border-radius:99px;background:#F0FBF4;border:1px solid #9FD9BB;color:#085041;font-size:14px;font-weight:500;">▲ Evolução: +${snapshots.after.total - snapshots.before.total} pontos — +${snapshots.after.pct - snapshots.before.pct}pp de maturidade empresarial</div>` : ''}
+    </div>
+  ` : '';
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Empresarial${name ? ' — ' + name : ''} — Meu Negócio em Ordem</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'DM Sans', sans-serif; background: #FDFAF3; color: #2C1A0E; margin: 0; padding: 0; }
+  @media print { body { background: white; } }
+</style>
+</head>
+<body>
+<div style="background:#2C1A0E; padding:48px 32px 40px; text-align:center;">
+  <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#C49A2A;margin-bottom:12px;">Priscilla Guedes Mentoria</div>
+  <h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:36px;font-weight:600;color:#FAF5E8;margin:0 0 10px;">Diagnóstico Empresarial</h1>
+  <p style="font-size:14px;color:rgba(250,245,232,0.65);margin:0;">Meu Negócio em Ordem</p>
+  ${biz.name ? `<p style="font-size:15px;color:rgba(250,245,232,0.9);margin-top:8px;font-weight:500;">🏢 ${biz.name}</p>` : ''}
+  ${name ? `<p style="font-size:13px;color:rgba(250,245,232,0.7);margin-top:4px;">👤 ${name}</p>` : ''}
+  ${dateStr ? `<p style="font-size:13px;color:rgba(250,245,232,0.55);margin-top:4px;">📅 ${dateStr}</p>` : ''}
+</div>
+
+<div style="max-width:780px;margin:0 auto;padding:40px 24px 64px;">
+
+  ${bizInfoHTML}
+
+  <!-- SCORE -->
+  <div style="background:#fff;border:1px solid #E6D9B8;border-radius:16px;padding:32px;margin-bottom:32px;display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
+    <div style="text-align:center;min-width:120px;">
+      <div style="width:110px;height:110px;border-radius:50%;background:#FAF5E8;border:2px solid #E0D0A0;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;">
+        <span style="font-family:'Cormorant Garamond',Georgia,serif;font-size:46px;font-weight:600;color:#8B6914;line-height:1;">${total}</span>
+        <span style="font-size:12px;color:#8A7560;">de 120</span>
+      </div>
+      <div style="font-size:12px;color:#8A7560;margin-top:8px;">Pontuação total</div>
+    </div>
+    <div style="flex:1;min-width:200px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;font-weight:500;color:#5C3D1E;">Índice de Maturidade Empresarial</span>
+        <span style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:600;color:#8B6914;">${pct}%</span>
+      </div>
+      <div style="height:10px;background:#FAF5E8;border:1px solid #E6D9B8;border-radius:99px;overflow:hidden;margin-bottom:12px;">
+        <div style="height:100%;width:${pct}%;background:#8B6914;border-radius:99px;"></div>
+      </div>
+      <span style="padding:5px 14px;border-radius:99px;font-size:12px;font-weight:500;background:#FAF5E8;border:1px solid #E0D0A0;color:#8B6914;">${label}</span>
+    </div>
+  </div>
+
+  <!-- DIMENSIONS TABLE -->
+  <div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#A87D1A;margin-bottom:4px;">Avaliação por dimensão</div>
+  <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:600;color:#2C1A0E;margin-bottom:16px;">Resultado das 12 dimensões</div>
+  <div style="background:#fff;border:1px solid #E6D9B8;border-radius:12px;overflow:hidden;margin-bottom:32px;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="background:#FAF5E8;">
+          <th style="padding:12px;text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8A7560;font-weight:500;">Dimensão</th>
+          <th style="padding:12px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8A7560;font-weight:500;width:80px;">Nota</th>
+          <th style="padding:12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8A7560;font-weight:500;width:200px;">Nível</th>
+        </tr>
+      </thead>
+      <tbody>${dimsRows}</tbody>
+    </table>
+  </div>
+
+  ${snapshotHTML}
+
+  <div style="text-align:center;margin-top:40px;padding-top:32px;border-top:1px solid #E6D9B8;">
+    <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;color:#C49A2A;">Priscilla Guedes Mentoria</div>
+    <div style="font-size:12px;color:#8A7560;margin-top:4px;">Meu Negócio em Ordem</div>
+    <div style="font-size:12px;color:#8A7560;">priscillaguedes.com.br</div>
+  </div>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `diagnostico-meu-negocio-em-ordem${name ? '-' + name.replace(/\s+/g,'-').toLowerCase() : ''}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+// ========== RESET ==========
+function resetAll() {
+  if (!confirm('Deseja reiniciar todos os valores? Os registros de snapshot serão mantidos.')) return;
+  allDims.forEach(d => {
+    scores[d.id] = 0;
+    const slider = document.getElementById('slider-' + d.id);
+    const val = document.getElementById('val-' + d.id);
+    if (slider) { slider.value = 0; slider.style.setProperty('--fill-pct', '0%'); }
+    if (val) val.textContent = '0';
+  });
+  recalc();
+  document.getElementById('result-section').classList.remove('visible');
+}
+
+// ========== SET TODAY'S DATE ==========
+function setTodayDate() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('diag-date').value = today;
+}
+
+// ========== INIT ==========
+buildDimensions();
+setTodayDate();
+updateRadar();
+</script>
+</body>
+</html>
