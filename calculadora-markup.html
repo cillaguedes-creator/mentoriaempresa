@@ -1,0 +1,194 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Calculadora de Markup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&family=Caveat:wght@600&display=swap">
+<style>
+/* Layout: ferramenta de uma coluna, como uma ficha de precificação de balcão. Entradas à esquerda e resultado à direita no desktop; empilhado no celular */
+:root{
+  --bg:#FAF1E7; --paper:#FEF8F1; --ink:#5A3E2B; --soft:#7D6552; --line:#E6D3BB;
+  --accent:#C69C6D; --tan:#D2B48C; --dark:#5A3E2B; --on-dark:#FAF1E7;
+  --warn:#9A4A2E; --warn-bg:#F6E1D6; --ok:#5E7A4E;
+  --c-custo:#B4A18F; --c-var:#D2B48C; --c-fixo:#C69C6D; --c-lucro:#5A3E2B;
+  --serif:'EB Garamond',Georgia,serif; --sans:'Jost',system-ui,sans-serif; --hand:'Caveat',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#2A1F17; --paper:#33261C; --ink:#F4E9DC; --soft:#CDB9A3; --line:#4A3828;
+  --accent:#D9AE7C; --tan:#B89668; --dark:#1F1711; --on-dark:#F4E9DC;
+  --warn:#F0A88A; --warn-bg:#4A2A1E; --ok:#B7CFA4;
+  --c-custo:#8C7A6A; --c-var:#B89668; --c-fixo:#D9AE7C; --c-lucro:#F4E9DC; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#2A1F17; --paper:#33261C; --ink:#F4E9DC; --soft:#CDB9A3; --line:#4A3828;
+  --accent:#D9AE7C; --tan:#B89668; --dark:#1F1711; --on-dark:#F4E9DC;
+  --warn:#F0A88A; --warn-bg:#4A2A1E; --ok:#B7CFA4;
+  --c-custo:#8C7A6A; --c-var:#B89668; --c-fixo:#D9AE7C; --c-lucro:#F4E9DC; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;font-size:16px;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:36px 56px;display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--soft);font-weight:500}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,6vw,54px);line-height:1.04;margin:0;text-wrap:balance}
+h1 em{font-style:italic;font-weight:500;color:var(--accent)}
+.lede{margin:0;color:var(--soft);max-width:62ch}
+.grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.card h2{font-family:var(--serif);font-weight:600;font-size:24px;margin:0}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:500;font-size:15px}
+.field small{color:var(--soft);font-size:13.5px;line-height:1.45}
+.input{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;background:var(--bg);overflow:hidden}
+.input span{padding:0 12px;color:var(--soft);font-size:15px;font-weight:400}
+.input input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font-family:var(--sans);font-size:18px;font-weight:400;padding:11px 12px;font-variant-numeric:tabular-nums}
+.input input:focus{outline:none}
+.input:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
+.group{display:flex;flex-direction:column;gap:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.group-title{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);font-weight:500}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:420px){.two{grid-template-columns:1fr}}
+.result{background:var(--dark);color:var(--on-dark);border-radius:8px;padding:26px 24px;display:flex;flex-direction:column;gap:16px}
+.result .label{font-size:12px;letter-spacing:.24em;text-transform:uppercase;opacity:.75;font-weight:500}
+.big{font-family:var(--serif);font-weight:600;font-size:clamp(48px,9vw,72px);line-height:1;font-variant-numeric:tabular-nums}
+.price{font-family:var(--serif);font-style:italic;font-weight:500;font-size:30px;color:var(--accent);font-variant-numeric:tabular-nums}
+.bar{display:flex;height:16px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.12)}
+.bar i{display:block;height:100%}
+.legend{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;font-size:14px;align-items:center;font-variant-numeric:tabular-nums}
+.dot{width:10px;height:10px;border-radius:50%}
+.legend .v{text-align:right;font-weight:400}
+.alert{background:var(--warn-bg);color:var(--warn);border-radius:6px;padding:12px 14px;font-size:14.5px;font-weight:400}
+.note{font-family:var(--hand);font-size:24px;line-height:1.2;color:var(--accent);margin:0}
+.formula{display:flex;flex-direction:column;gap:12px}
+.formula ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
+.eq{font-family:var(--serif);font-size:20px;background:var(--bg);border-left:3px solid var(--tan);padding:10px 14px;border-radius:4px;overflow-x:auto}
+.check .row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.check .row .field{flex:1 1 160px}
+.verdict{font-size:15.5px;font-weight:400;line-height:1.5}
+.verdict b{font-family:var(--serif);font-size:22px}
+footer{display:flex;flex-direction:column;gap:6px;align-items:flex-start;border-top:1px solid var(--line);padding-top:20px}
+footer a{color:var(--ink);font-weight:500;text-decoration-color:var(--accent);text-underline-offset:3px}
+.muted{color:var(--soft);font-size:13.5px}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Empresarês · @priguedesoficial</span>
+    <h1>Calculadora de <em>Markup</em></h1>
+    <p class="lede">Descubra por quanto multiplicar o custo do seu produto para que o preço pague as taxas, as despesas da empresa e ainda deixe o lucro que você quer. Os valores abaixo são um exemplo: troque pelos números do seu negócio.</p>
+  </header>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="t-dados">
+      <h2 id="t-dados">Os números do seu negócio</h2>
+
+      <div class="field">
+        <label for="custo">Custo do produto</label>
+        <div class="input"><span>R$</span><input id="custo" type="text" inputmode="decimal" value="50,00"></div>
+        <small>Quanto você pagou pelo produto, incluindo frete de compra. Se você fabrica, some matéria-prima e mão de obra direta.</small>
+      </div>
+
+      <div class="group">
+        <span class="group-title">Despesas que acompanham cada venda</span>
+        <div class="two">
+          <div class="field"><label for="imposto">Impostos</label><div class="input"><input id="imposto" type="text" inputmode="decimal" value="6"><span>%</span></div></div>
+          <div class="field"><label for="cartao">Taxa de cartão</label><div class="input"><input id="cartao" type="text" inputmode="decimal" value="4"><span>%</span></div></div>
+          <div class="field"><label for="comissao">Comissão</label><div class="input"><input id="comissao" type="text" inputmode="decimal" value="3"><span>%</span></div></div>
+          <div class="field"><label for="outrasv">Outras (embalagem, frete)</label><div class="input"><input id="outrasv" type="text" inputmode="decimal" value="2"><span>%</span></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <span class="group-title">Despesas fixas da empresa</span>
+        <div class="two">
+          <div class="field"><label for="fixas">Despesas fixas por mês</label><div class="input"><span>R$</span><input id="fixas" type="text" inputmode="decimal" value="6.000,00"></div></div>
+          <div class="field"><label for="fat">Faturamento médio por mês</label><div class="input"><span>R$</span><input id="fat" type="text" inputmode="decimal" value="30.000,00"></div></div>
+        </div>
+        <small>Aluguel, salários, seu pró-labore, contador, internet, luz e sistemas. Divida pelo faturamento médio e você descobre quanto de cada venda precisa ir para pagar a estrutura.</small>
+      </div>
+
+      <div class="group">
+        <div class="field">
+          <label for="lucro">Lucro que você quer em cada venda</label>
+          <div class="input"><input id="lucro" type="text" inputmode="decimal" value="10"><span>%</span></div>
+          <small>Para a maioria dos pequenos negócios, algo entre 8% e 15% já é um bom começo.</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="result" aria-live="polite" aria-labelledby="t-res">
+      <span class="label" id="t-res">Seu markup</span>
+      <div class="big" id="mk">–</div>
+      <div><span class="label">Preço de venda sugerido</span><div class="price" id="preco">–</div></div>
+      <div id="alerta" class="alert" hidden></div>
+      <div class="bar" id="bar" aria-hidden="true"></div>
+      <div class="legend" id="legend"></div>
+      <p class="note" id="frase"></p>
+    </section>
+  </div>
+
+  <section class="card check" aria-labelledby="t-teste">
+    <h2 id="t-teste">Teste o markup que você usa hoje</h2>
+    <p class="muted" style="margin:0">Com as mesmas despesas acima, veja quanto sobra de verdade com o markup que você já usa.</p>
+    <div class="row">
+      <div class="field"><label for="atual">Markup que você usa</label><div class="input"><input id="atual" type="text" inputmode="decimal" value="2"><span>×</span></div></div>
+    </div>
+    <div class="verdict" id="verdict"></div>
+  </section>
+
+  <section class="card formula" aria-labelledby="t-form">
+    <h2 id="t-form">A fórmula, passo a passo</h2>
+    <ol>
+      <li><b>Despesas variáveis (%)</b>: some impostos, taxa de cartão, comissão e outras despesas que acontecem a cada venda.</li>
+      <li><b>Despesas fixas (%)</b>: divida as despesas fixas do mês pelo faturamento médio do mês e multiplique por 100.</li>
+      <li><b>Lucro desejado (%)</b>: quanto você quer que sobre de cada venda.</li>
+      <li><b>Markup</b>: divida 100 pelo que sobra depois de tirar essas três porcentagens.</li>
+    </ol>
+    <div class="eq">Markup = 100 ÷ (100 − despesas variáveis − despesas fixas − lucro)</div>
+    <div class="eq">Preço de venda = custo × markup</div>
+    <p class="muted" style="margin:0">Exemplo: 15% de despesas variáveis, 20% de fixas e 10% de lucro somam 45%. Sobram 55%. Markup = 100 ÷ 55 = 1,82. Um produto de R$ 50 vai para R$ 90,91.</p>
+  </section>
+
+  <footer>
+    <p class="note" style="font-size:26px">Markup não é lucro. É a régua que paga as contas antes de sobrar alguma coisa para você.</p>
+    <span class="muted">Ferramenta educativa criada por Priscilla Guedes. Confirme as alíquotas de imposto com o seu contador.</span>
+    <a href="https://www.instagram.com/priguedesoficial/" target="_blank" rel="noopener">Quer levar gestão para o seu negócio? Siga @priguedesoficial</a>
+  </footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+function num(id){ const s=$(id).value.trim().replace(/\s/g,"").replace(/R\$/,""); if(!s) return 0;
+  const n = s.includes(",") ? s.replace(/\./g,"").replace(",",".") : s; const v=parseFloat(n); return isFinite(v)?v:0; }
+const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const pct = v => v.toLocaleString("pt-BR",{maximumFractionDigits:1})+"%";
+const dec = v => v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+function calc(){
+  const custo=num("custo");
+  const dv=num("imposto")+num("cartao")+num("comissao")+num("outrasv");
+  const fat=num("fat"); const df= fat>0 ? num("fixas")/fat*100 : 0;
+  const lucro=num("lucro");
+  const soma=dv+df+lucro; const resto=100-soma;
+  const al=$("alerta");
+  if(resto<=5){
+    $("mk").textContent="–"; $("preco").textContent="–"; $("bar").innerHTML=""; $("legend").innerHTML="";
+    al.hidden=false; al.textContent="As despesas e o lucro somam "+pct(soma)+" do preço. Assim não existe markup que funcione: revise as despesas fixas, o faturamento ou o lucro desejado.";
+    $("frase").textContent=""; check(dv,df); return;
+  }
+  al.hidden = !(fat<=0); if(fat<=0) al.textContent="Informe o faturamento médio para incluir as despesas fixas no cálculo.";
+  const mk=100/resto, preco=custo*mk;
+  $("mk").textContent=dec(mk)+"×"; $("preco").textContent=brl(preco);
+  const parts=[["Custo do produto",resto,"var(--c-custo)",custo],["Despesas por venda",dv,"var(--c-var)",preco*dv/100],["Despesas fixas",df,"var(--c-fixo)",preco*df/100],["Seu lucro",lucro,"var(--c-lucro)",preco*lucro/100]];
+  $("bar").innerHTML=parts.map(p=>`<i style="width:${Math.max(p[1],0)}%;background:${p[2]}"></i>`).join("");
+  $("legend").innerHTML=parts.map(p=>`<span class="dot" style="background:${p[2]}"></span><span>${p[0]} · ${pct(p[1])}</span><span class="v">${brl(p[3])}</span>`).join("");
+  $("frase").textContent="De cada "+brl(preco)+" vendidos, "+brl(preco*lucro/100)+" ficam com você.";
+  check(dv,df);
+}
+function check(dv,df){
+  const a=num("atual"), v=$("verdict");
+  if(a<=1){ v.innerHTML="Informe um markup maior que 1."; return; }
+  const custoPct=100/a, sobra=100-custoPct-dv-df;
+  const custo=num("custo"), preco=custo*a;
+  if(sobra<0){ v.innerHTML=`Com markup ${dec(a)}×, o produto de ${brl(custo)} sai por ${brl(preco)} e você tem <b style="color:var(--warn)">prejuízo de ${pct(-sobra)}</b> em cada venda (${brl(preco*sobra/100)}). As despesas consomem mais do que o preço deixa.`; }
+  else { v.innerHTML=`Com markup ${dec(a)}×, o produto de ${brl(custo)} sai por ${brl(preco)} e sobram <b>${pct(sobra)}</b> de lucro em cada venda, ou seja, ${brl(preco*sobra/100)}.`; }
+}
+document.querySelectorAll("input").forEach(i=>i.addEventListener("input",calc));
+calc();
+</script>
+
+</body></html>
